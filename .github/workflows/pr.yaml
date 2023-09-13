@@ -1,0 +1,47 @@
+---
+name: PR
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  FORCE_COLOR: ${{ vars.FORCE_COLOR }}
+  POETRY_VERSION: ${{ vars.RECIPES_POETRY_VERSION }}
+  CR: ${{ vars.RECIPES_CR}}
+  RECIPES_TEST_DB_URL: "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+  RECIPES_TEST_MIGRATIONS_DIR: "file://_infra/dev/do/migrations"
+
+jobs:
+  code-checks:
+    name: Code Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: recipes-org/infra
+          path: _infra
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - run: python3 -m pip install poetry==$POETRY_VERSION
+      - run: poetry install
+      - run: |
+          echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+          echo "VERSION=$(poetry version -s)" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=${{ env.CR }}${{ github.repository }}" >> "$GITHUB_ENV"
+      - run: echo "$IMAGE_NAME:$VERSION"
+      - run: make fmt-check
+      - run: make docs-build
+      - run: make type-check
+      - run: make test-coverage
+      - run: curl -sSf https://atlasgo.sh | sh
+      - run: make test-all
+      - run: docker build -t $IMAGE_NAME:$VERSION .
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_CI }}
+      - run: doctl registry login
+      - run: docker push $IMAGE_NAME:$VERSION

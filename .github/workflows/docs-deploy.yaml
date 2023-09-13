@@ -1,0 +1,26 @@
+---
+name: Deploy docs
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  FORCE_COLOR: ${{ vars.FORCE_COLOR }}
+  POETRY_VERSION: ${{ vars.RECIPES_POETRY_VERSION }}
+  PYTHON_VERSION: ${{ vars.RECIPES_PYTHON_VERSION }}
+
+jobs:
+  docs:
+    name: Deploy docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: curl -sSL https://install.python-poetry.org | python3 - --version $POETRY_VERSION
+      - run: poetry install
+      - run: poetry run mkdocs gh-deploy --force

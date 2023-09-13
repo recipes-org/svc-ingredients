@@ -1,0 +1,20 @@
+site_name: Recipes
+
+theme:
+  name: material
+
+watch:
+  - src
+  - tests
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+nav:
+  - index.md
+  - db.md
+  - repository.md

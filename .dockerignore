@@ -1,0 +1,13 @@
+# Ignore everything
+*
+
+# Include
+!pyproject.toml
+!poetry.lock
+!README.md
+!main.py
+!src/
+
+
+# Ignore inside included paths
+**/__pycache__
