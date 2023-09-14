@@ -8,12 +8,11 @@ services:
       - 8008:8008
     depends_on:
       - db
-    container_name: "svc-recipes"
  
   db:
     image: postgres:15-bookworm
     volumes:
-      - svc_recipes_postgres_data:/var/lib/postgresql/data/
+      - svc_ingredients_postgres_data:/var/lib/postgresql/data/
     env_file:
       - .test.env
     ports:
@@ -25,4 +24,4 @@ services:
       retries: 10
  
 volumes:
-    svc_recipes_postgres_data:
+    svc_ingredients_postgres_data:

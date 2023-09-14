@@ -1,6 +1,6 @@
 import pytest
 
-from recipes.services import Services
+from ingredients.services import Services
 
 
 def test_services_not_initialised() -> None:

@@ -5,11 +5,12 @@ from pydantic_settings import BaseSettings
 
 
 class Config(BaseSettings):
-    recipes_repository_name: str = "SQLAlchemyRepository"
+    debug: bool = False
     database_url: str = "sqlite+aiosqlite://"
-    recipes_sql_alchemy_database_create: bool = False
-    recipes_unit_of_work_name: str = "SessionUnitOfWork"
-    recipes_debug: bool = False
+    ingredients_router_prefix: str = "/v1"
+    ingredients_repository_name: str = "SQLAlchemyRepository"
+    ingredients_sql_alchemy_database_create: bool = False
+    ingredients_unit_of_work_name: str = "SessionUnitOfWork"
 
     @field_validator("database_url")
     @classmethod

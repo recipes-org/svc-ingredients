@@ -1,7 +1,7 @@
 import pytest
 
-from recipes.config import Config
-from recipes.repository import (
+from ingredients.config import Config
+from ingredients.repository import (
     Repository,
     SQLAlchemyRepository,
     create_repository,

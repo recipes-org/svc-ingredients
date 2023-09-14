@@ -1,1 +1,1 @@
-::: recipes.repository
+::: ingredients.repository
