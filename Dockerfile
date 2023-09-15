@@ -23,4 +23,4 @@ COPY src src
 RUN venv/bin/poetry install --only-root --compile --no-cache
 
 COPY main.py .
-CMD venv/bin/poetry run uvicorn main:app --host $RECIPES_HOST --port $RECIPES_PORT
+CMD venv/bin/poetry run uvicorn main:app --host $HOST --port $PORT
