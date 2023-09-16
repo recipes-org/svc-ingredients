@@ -1,6 +1,6 @@
 export-local-vars:
-	export INGREDIENTS_TEST_DB_URL=postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable
-	export INGREDIENTS_TEST_MIGRATIONS_DIR=file://../infra/dev/do/migrations
+	export TEST_DB_URL=postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable
+	export TEST_MIGRATIONS_DIR=file://../infra/dev/do/migrations
 
 up:
 	docker compose up --build --force-recreate --detach --wait --wait-timeout 30
@@ -53,6 +53,6 @@ watch-server:
 
 migrate:
 	atlas migrate apply \
-		--dir "$(INGREDIENTS_TEST_MIGRATIONS_DIR)" \
-		--url "$(INGREDIENTS_TEST_DB_URL)" \
+		--dir "$(TEST_MIGRATIONS_DIR)" \
+		--url "$(TEST_DB_URL)" \
 		--revisions-schema public

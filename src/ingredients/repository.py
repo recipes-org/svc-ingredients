@@ -1,8 +1,12 @@
 from typing import Any, Protocol
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from ingredients import config, domain, orm
 
@@ -14,17 +18,13 @@ class Repository(Protocol):
     session: AsyncSession
 
     @classmethod
-    async def initialise(cls, cfg: config.Config) -> None:
-        ...
+    async def initialise(cls, cfg: config.Config) -> None: ...
 
-    async def add(self, ingredient: domain.Ingredient) -> domain.IngredientInDB:
-        ...
+    async def add(self, ingredient: domain.Ingredient) -> domain.IngredientInDB: ...
 
-    async def get(self, ingredient_id: str) -> domain.IngredientInDB:
-        ...
+    async def get(self, ingredient_id: str) -> domain.IngredientInDB: ...
 
-    async def list(self) -> list[domain.IngredientInDB]:
-        ...
+    async def list(self) -> list[domain.IngredientInDB]: ...
 
 
 class SQLAlchemyRepository:
