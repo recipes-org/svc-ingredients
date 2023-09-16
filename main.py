@@ -1,6 +1,6 @@
 import logging
 
-from recipes.app import create_app
+from ingredients.app import create_app
 
 
 logger = logging.getLogger(__name__)

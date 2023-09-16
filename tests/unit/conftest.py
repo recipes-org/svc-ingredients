@@ -6,39 +6,28 @@ from httpx import AsyncClient
 import pytest
 import pytest_asyncio
 
-from recipes import domain
-from recipes.app import create_app
-from recipes.config import Config
-from recipes.repository import (
+from ingredients import domain
+from ingredients.app import create_app
+from ingredients.config import Config
+from ingredients.repository import (
     Repository,
     SQLAlchemyRepository,
 )
-from recipes.services import Services
-from recipes.uow import SessionUnitOfWork, UnitOfWork
+from ingredients.services import Services
+from ingredients.uow import SessionUnitOfWork, UnitOfWork
 
 
 @pytest.fixture
-def recipe() -> domain.Recipe:
-    return domain.Recipe(name="Rustica", requirements=[])
-
-
-@pytest.fixture
-def recipe_with_requirements(recipe: domain.Recipe) -> domain.Recipe:
-    recipe.requirements = [
-        domain.Requirement(ingredient="spinach", measurement="grams", quantity=500.0),
-        domain.Requirement(
-            ingredient="short-crust pastry", measurement="grams", quantity=500.0
-        ),
-    ]
-    return recipe
+def ingredient() -> domain.Ingredient:
+    return domain.Ingredient(name="Spinach")
 
 
 @pytest.fixture
 def in_memory_db_config() -> Generator[Config, Any, Any]:
     yield Config(
-        recipes_repository_name="SQLAlchemyRepository",
+        ingredients_repository_name="SQLAlchemyRepository",
         database_url="sqlite+aiosqlite://",
-        recipes_sql_alchemy_database_create=True,
+        ingredients_sql_alchemy_database_create=True,
     )
     SQLAlchemyRepository.session_factory = None
     SessionUnitOfWork.repository_cls = None
@@ -57,7 +46,7 @@ def unit_of_work_cannot_commit() -> type[UnitOfWork]:
 @pytest.fixture
 def repository_cannot_list() -> type[Repository]:
     class SQLAlchemyRepositoryCannotList(SQLAlchemyRepository):
-        async def list(self) -> list[domain.RecipeInDB]:
+        async def list(self) -> list[domain.IngredientInDB]:
             raise ValueError(":(")
 
     return SQLAlchemyRepositoryCannotList
@@ -66,7 +55,7 @@ def repository_cannot_list() -> type[Repository]:
 @pytest.fixture
 def repository_cannot_get() -> type[Repository]:
     class SQLAlchemyRepositoryCannotGet(SQLAlchemyRepository):
-        async def get(self, recipe_id: str) -> domain.RecipeInDB:
+        async def get(self, ingredient_id: str) -> domain.IngredientInDB:
             raise ValueError(":(")
 
     return SQLAlchemyRepositoryCannotGet

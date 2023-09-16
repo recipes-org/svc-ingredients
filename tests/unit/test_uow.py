@@ -1,6 +1,6 @@
 import pytest
 
-from recipes.uow import create_unit_of_work, SessionUnitOfWork
+from ingredients.uow import create_unit_of_work, SessionUnitOfWork
 
 
 @pytest.mark.asyncio

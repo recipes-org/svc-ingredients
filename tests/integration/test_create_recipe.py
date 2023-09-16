@@ -1,22 +1,17 @@
+import uuid
+
 import httpx
 import pytest
 
-from recipes.domain import Recipe
+from ingredients.domain import Ingredient
 
 
 @pytest.mark.asyncio
-async def test_create_recipe() -> None:
-    data = Recipe.model_validate(
-        {
-            "name": "Rustica",
-            "requirements": [
-                {"ingredient": "spinach", "measurement": "grams", "quantity": 500}
-            ],
-        }
-    )
+async def test_create_ingredient() -> None:
+    data = Ingredient.model_validate({"name": uuid.uuid4().hex})
     async with httpx.AsyncClient() as client:
         resp = await client.post(
-            "http://localhost:8008/recipes/", json=data.model_dump()
+            "http://localhost:8008/v1/ingredients/", json=data.model_dump()
         )
 
-    assert resp.status_code == 201
+    assert resp.status_code == 201, (data, resp.json())

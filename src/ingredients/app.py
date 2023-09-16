@@ -2,11 +2,11 @@ import logging
 
 from fastapi import FastAPI
 
-from recipes import config
-from recipes import repository
-from recipes import router
-from recipes import services
-from recipes import uow
+from ingredients import config
+from ingredients import repository
+from ingredients import router
+from ingredients import services
+from ingredients import uow
 
 logger = logging.getLogger(__name__)
 
@@ -33,18 +33,18 @@ def create_app(
     # I.e., import config only appears in this file.
     cfg = config.Config() if cfg is None else cfg
 
-    app = FastAPI(debug=cfg.recipes_debug)
+    app = FastAPI(debug=cfg.debug)
     app.include_router(router.router)
 
     logger.info("Config: %s", cfg.log_safe_model_dump())
 
     repository_cls = (
-        repository.create_repository(cfg.recipes_repository_name)
+        repository.create_repository(cfg.ingredients_repository_name)
         if repository_cls is None
         else repository_cls
     )
     unit_of_work_cls = (
-        uow.create_unit_of_work(cfg.recipes_unit_of_work_name)
+        uow.create_unit_of_work(cfg.ingredients_unit_of_work_name)
         if unit_of_work_cls is None
         else unit_of_work_cls
     )

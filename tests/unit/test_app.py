@@ -1,59 +1,53 @@
-from httpx import AsyncClient
 import pytest
+from httpx import AsyncClient
 
-
-from recipes import domain
+from ingredients import domain
 
 
 @pytest.mark.asyncio
 async def test_sanity(in_memory_db_app_client: AsyncClient) -> None:
-    resp = await in_memory_db_app_client.get("/recipes/")
+    resp = await in_memory_db_app_client.get("/v1/ingredients/")
     assert resp.status_code == 200, resp
     assert resp.json() == [], resp.json()
 
 
 @pytest.mark.asyncio
-async def test_recipe_round_trip(
+async def test_ingredient_round_trip(
     in_memory_db_app_client: AsyncClient,
-    recipe_with_requirements: domain.Recipe,
+    ingredient: domain.Ingredient,
 ) -> None:
-    data = recipe_with_requirements.model_dump()
+    data = ingredient.model_dump()
 
-    resp = await in_memory_db_app_client.post("/recipes/", json=data)
+    resp = await in_memory_db_app_client.post("/v1/ingredients/", json=data)
     assert resp.status_code == 201, resp.json()
 
-    created_recipe = domain.RecipeInDB.model_validate(resp.json())
-    assert created_recipe.id
-    assert created_recipe.name == recipe_with_requirements.name
-    assert all(
-        og.ingredient == db.ingredient and db.recipe_id
-        for og, db in zip(
-            recipe_with_requirements.requirements, created_recipe.requirements
-        )
-    )
+    created_ingredient = domain.IngredientInDB.model_validate(resp.json())
+    assert created_ingredient.id
+    assert created_ingredient.name == ingredient.name
 
-    resp = await in_memory_db_app_client.get(f"/recipes/{created_recipe.id}")
+    resp = await in_memory_db_app_client.get(f"/v1/ingredients/{created_ingredient.id}")
     assert resp.status_code == 200, resp.json()
 
-    got = domain.RecipeInDB.model_validate(resp.json())
+    got = domain.IngredientInDB.model_validate(resp.json())
 
-    assert got == created_recipe
+    assert got == created_ingredient
 
 
 @pytest.mark.asyncio
-async def test_invalid_recipe(in_memory_db_app_client: AsyncClient) -> None:
-    data = {"name": "no"}
-    resp = await in_memory_db_app_client.post("/recipes/", json=data)
-    assert resp.status_code == 422, resp.json()
+async def test_invalid_ingredient(in_memory_db_app_client: AsyncClient) -> None:
+    resp = await in_memory_db_app_client.post("/v1/ingredients/", json={})
+    assert resp.status_code == 422, resp
 
 
 @pytest.mark.asyncio
 async def test_problem_committing(
     in_memory_db_app_cannot_commit_client: AsyncClient,
-    recipe_with_requirements: domain.Recipe,
+    ingredient: domain.Ingredient,
 ) -> None:
-    data = recipe_with_requirements.model_dump()
-    resp = await in_memory_db_app_cannot_commit_client.post("/recipes/", json=data)
+    data = ingredient.model_dump()
+    resp = await in_memory_db_app_cannot_commit_client.post(
+        "/v1/ingredients/", json=data
+    )
     assert resp.status_code > 400, resp.json()
 
 
@@ -61,17 +55,17 @@ async def test_problem_committing(
 async def test_problem_listing(
     in_memory_db_app_cannot_list_client: AsyncClient,
 ) -> None:
-    resp = await in_memory_db_app_cannot_list_client.get("/recipes/")
+    resp = await in_memory_db_app_cannot_list_client.get("/v1/ingredients/")
     assert resp.status_code > 400, resp.json()
 
 
 @pytest.mark.asyncio
 async def test_problem_getting(
     in_memory_db_app_cannot_get_client: AsyncClient,
-    recipe_with_requirements: domain.Recipe,
+    ingredient: domain.Ingredient,
 ) -> None:
-    data = recipe_with_requirements.model_dump()
-    resp = await in_memory_db_app_cannot_get_client.post("/recipes/", json=data)
-    got = domain.RecipeInDB.model_validate(resp.json())
-    resp = await in_memory_db_app_cannot_get_client.get(f"/recipes/{got.id}")
+    data = ingredient.model_dump()
+    resp = await in_memory_db_app_cannot_get_client.post("/v1/ingredients/", json=data)
+    got = domain.IngredientInDB.model_validate(resp.json())
+    resp = await in_memory_db_app_cannot_get_client.get(f"/v1/ingredients/{got.id}")
     assert resp.status_code > 400, resp.json()

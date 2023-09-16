@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Protocol
 
-from recipes import repository
+from ingredients import repository
 
 
 class UnitOfWork(Protocol):
@@ -17,7 +17,7 @@ class UnitOfWork(Protocol):
     async def __aexit__(self, *args: Any) -> None: ...
 
     @property
-    def recipes(self) -> repository.Repository: ...
+    def ingredients(self) -> repository.Repository: ...
 
     async def commit(self) -> None: ...
 
@@ -36,18 +36,18 @@ class SessionUnitOfWork:
     async def __aenter__(self) -> UnitOfWork:
         if self.repository_cls is None:
             raise RuntimeError(f"{self.__class__.__name__} not initialised.")
-        self.recipes = self.repository_cls()
+        self.ingredients = self.repository_cls()
         return self
 
     async def __aexit__(self, *args: Any) -> None:
         await self.rollback()
-        await self.recipes.session.close()
+        await self.ingredients.session.close()
 
     async def commit(self) -> None:
-        await self.recipes.session.commit()
+        await self.ingredients.session.commit()
 
     async def rollback(self) -> None:
-        await self.recipes.session.rollback()
+        await self.ingredients.session.rollback()
 
 
 UNIT_OF_WORKS = {"sessionunitofwork": SessionUnitOfWork}

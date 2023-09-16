@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "recipes"
-version = "0.3.1"
+name = "ingredients"
+version = "0.1.0"
 description = ""
 authors = ["Sam Thorold <sam.thorold@gmail.com>"]
 readme = "README.md"
 packages = [
-    {"include" = "recipes", from = "src"},
+    {"include" = "ingredients", from = "src"},
 ]
 
 [tool.poetry.dependencies]

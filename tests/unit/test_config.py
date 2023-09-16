@@ -1,4 +1,4 @@
-from recipes.config import Config
+from ingredients.config import Config
 
 
 def test_config_database_url_async_driver() -> None:

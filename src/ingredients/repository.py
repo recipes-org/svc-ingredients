@@ -7,13 +7,12 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import selectinload
 
-from recipes import config, domain, orm
+from ingredients import config, domain, orm
 
 
 class Repository(Protocol):
-    """Recipe repository protocol."""
+    """Ingredient repository protocol."""
 
     session_factory: async_sessionmaker[AsyncSession] | None
     session: AsyncSession
@@ -21,15 +20,15 @@ class Repository(Protocol):
     @classmethod
     async def initialise(cls, cfg: config.Config) -> None: ...
 
-    async def add(self, recipe: domain.Recipe) -> domain.RecipeInDB: ...
+    async def add(self, ingredient: domain.Ingredient) -> domain.IngredientInDB: ...
 
-    async def get(self, recipe_id: str) -> domain.RecipeInDB: ...
+    async def get(self, ingredient_id: str) -> domain.IngredientInDB: ...
 
-    async def list(self) -> list[domain.RecipeInDB]: ...
+    async def list(self) -> list[domain.IngredientInDB]: ...
 
 
 class SQLAlchemyRepository:
-    """SQLAlchemy implementation of the Recipe repository protocol."""
+    """SQLAlchemy implementation of the ingredient repository protocol."""
 
     engine: AsyncEngine | None = None
     session_factory: async_sessionmaker[AsyncSession] | None = None
@@ -42,14 +41,14 @@ class SQLAlchemyRepository:
         engine = create_async_engine(
             cfg.database_url,
             connect_args=kwargs,
-            echo=cfg.recipes_debug,
+            echo=cfg.debug,
         )
 
         cls.engine = engine
         cls.session_factory = async_sessionmaker(
             autocommit=False, autoflush=False, bind=engine
         )
-        if cfg.recipes_sql_alchemy_database_create:
+        if cfg.ingredients_sql_alchemy_database_create:
             async with cls.engine.begin() as conn:
                 await conn.run_sync(orm.Base.metadata.create_all)
 
@@ -58,25 +57,21 @@ class SQLAlchemyRepository:
             raise RuntimeError(f"{self.__class__.__name__} not initialised.")
         self.session = self.session_factory()
 
-    async def add(self, recipe: domain.Recipe) -> domain.RecipeInDB:
-        recipe_in_db = domain.RecipeInDB.from_recipe(recipe)
-        orm_recipe = orm.Recipe.from_domain(recipe_in_db)
-        self.session.add(orm_recipe)
-        return recipe_in_db
+    async def add(self, ingredient: domain.Ingredient) -> domain.IngredientInDB:
+        ingredient_in_db = domain.IngredientInDB.from_ingredient(ingredient)
+        orm_ingredient = orm.Ingredient.from_domain(ingredient_in_db)
+        self.session.add(orm_ingredient)
+        return ingredient_in_db
 
-    async def get(self, recipe_id: str) -> domain.RecipeInDB:
-        stmt = (
-            select(orm.Recipe)
-            .options(selectinload(orm.Recipe.requirements))
-            .where(orm.Recipe.id == recipe_id)
-        )
-        orm_recipe = await self.session.execute(stmt)
-        return domain.RecipeInDB.model_validate(orm_recipe.scalar_one())
+    async def get(self, ingredient_id: str) -> domain.IngredientInDB:
+        stmt = select(orm.Ingredient).where(orm.Ingredient.id == ingredient_id)
+        orm_ingredient = await self.session.execute(stmt)
+        return domain.IngredientInDB.model_validate(orm_ingredient.scalar_one())
 
-    async def list(self) -> list[domain.RecipeInDB]:
-        stmt = select(orm.Recipe).options(selectinload(orm.Recipe.requirements))
-        orm_recipes = (await self.session.execute(stmt)).scalars().all()
-        return [domain.RecipeInDB.model_validate(o) for o in orm_recipes]
+    async def list(self) -> list[domain.IngredientInDB]:
+        stmt = select(orm.Ingredient)
+        orm_ingredients = (await self.session.execute(stmt)).scalars().all()
+        return [domain.IngredientInDB.model_validate(o) for o in orm_ingredients]
 
 
 REPOSITORIES = {

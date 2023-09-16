@@ -1,1 +1,1 @@
-::: recipes.orm
+::: ingredients.orm
