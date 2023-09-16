@@ -4,6 +4,7 @@ export-local-vars:
 
 up:
 	docker compose up --build --force-recreate --detach --wait --wait-timeout 30
+	sleep 2
 
 down:
 	docker compose down
