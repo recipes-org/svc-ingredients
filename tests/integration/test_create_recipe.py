@@ -14,4 +14,4 @@ async def test_create_ingredient() -> None:
             "http://localhost:8008/v1/ingredients/", json=data.model_dump()
         )
 
-    assert resp.status_code == 201, resp.json()
+    assert resp.status_code == 201, (data, resp.json())

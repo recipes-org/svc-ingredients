@@ -7,7 +7,7 @@ up:
 	sleep 2
 
 down:
-	docker compose down
+	docker compose down --volumes
 
 test-unit:
 	DEBUG=1 poetry run python -m pytest tests/unit
