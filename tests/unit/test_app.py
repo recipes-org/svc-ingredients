@@ -1,6 +1,5 @@
-from httpx import AsyncClient
 import pytest
-
+from httpx import AsyncClient
 
 from ingredients import domain
 
@@ -36,15 +35,18 @@ async def test_ingredient_round_trip(
 
 @pytest.mark.asyncio
 async def test_invalid_ingredient(in_memory_db_app_client: AsyncClient) -> None:
-    data = {}
-    resp = await in_memory_db_app_client.post("/v1/ingredients/", json=data)
-    assert resp.status_code == 422, respytest.mark.asyncio
+    resp = await in_memory_db_app_client.post("/v1/ingredients/", json={})
+    assert resp.status_code == 422, resp
+
+
 async def test_problem_committing(
     in_memory_db_app_cannot_commit_client: AsyncClient,
     ingredient: domain.Ingredient,
 ) -> None:
     data = ingredient.model_dump()
-    resp = await in_memory_db_app_cannot_commit_client.post("/v1/ingredients/", json=data)
+    resp = await in_memory_db_app_cannot_commit_client.post(
+        "/v1/ingredients/", json=data
+    )
     assert resp.status_code > 400, resp.json()
 
 

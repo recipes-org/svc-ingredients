@@ -1,9 +1,9 @@
 from __future__ import annotations
 import os
 
-from sqlalchemy import Float, MetaData, String, ForeignKey
+from sqlalchemy import MetaData, String
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, mapped_column
 
 from ingredients import domain
 
@@ -23,8 +23,4 @@ class Ingredient(Base):
 
     @classmethod
     def from_domain(cls, ingredient: domain.IngredientInDB) -> Ingredient:
-        return cls(
-            **(
-                ingredient.model_dump()
-            )
-        )
+        return cls(**(ingredient.model_dump()))

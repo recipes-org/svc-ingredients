@@ -11,9 +11,7 @@ class Ingredient(BaseModel):
 class IngredientInDB(Ingredient):
     id: str
 
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_ingredient(cls, ingredient: Ingredient) -> IngredientInDB:

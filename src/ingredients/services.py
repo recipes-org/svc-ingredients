@@ -25,7 +25,9 @@ class Services:
         logger.info("Got %r ingredients", len(ingredients))
         return ingredients
 
-    async def create_ingredient(self, ingredient: domain.Ingredient) -> domain.IngredientInDB:
+    async def create_ingredient(
+        self, ingredient: domain.Ingredient
+    ) -> domain.IngredientInDB:
         async with self.unit_of_work() as uow:
             ingredient_in_db = await uow.ingredients.add(ingredient)
             await uow.commit()

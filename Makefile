@@ -1,12 +1,13 @@
 export-local-vars:
-	export INGREDIENTS_TEST_DB_URL=postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable
-	export INGREDIENTS_TEST_MIGRATIONS_DIR=file://../infra/dev/do/migrations
+	export TEST_DB_URL=postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable
+	export TEST_MIGRATIONS_DIR=file://../infra/dev/do/migrations
 
 up:
 	docker compose up --build --force-recreate --detach --wait --wait-timeout 30
+	sleep 2
 
 down:
-	docker compose down
+	docker compose down --volumes
 
 test-unit:
 	DEBUG=1 poetry run python -m pytest tests/unit
@@ -53,6 +54,11 @@ watch-server:
 
 migrate:
 	atlas migrate apply \
+<<<<<<< HEAD
 		--dir "$(INGREDIENTS_TEST_MIGRATIONS_DIR)" \
 		--url "$(INGREDIENTS_TEST_DB_URL)" \
+=======
+		--dir "$(TEST_MIGRATIONS_DIR)" \
+		--url "$(TEST_DB_URL)" \
+>>>>>>> 940d6e35ba5afe7ded7709e1cea1448f2490d533
 		--revisions-schema public

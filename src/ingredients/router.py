@@ -31,7 +31,7 @@ async def create_ingredient(ingredient: domain.Ingredient) -> domain.IngredientI
         return await Services().create_ingredient(ingredient=ingredient)
     except Exception as e:
         logger.error("%r", e)
-        msg = "Could not get ingredient."
+        msg = "Could not create ingredient."
         raise HTTPException(500, f"{msg} {e}" if CFG.debug else msg) from e
 
 
@@ -42,5 +42,5 @@ async def get_ingredient(ingredient_id: str) -> domain.IngredientInDB:
         return await Services().get_ingredient(ingredient_id=ingredient_id)
     except Exception as e:
         logger.error("%r", e)
-        msg = "Could not create ingredients."
+        msg = "Could not get ingredient."
         raise HTTPException(500, f"{msg} {e}" if CFG.debug else msg) from e
